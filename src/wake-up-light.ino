@@ -9,74 +9,68 @@
 #include <RDA5807M.h>
 #include <Adafruit_Neopixel.h>
 #include <PCF8574.h>
-#include <TM1637Display.h>
 #include <RTClib.h>
 #include <I2C_eeprom.h>
 
 // Constant values for use throughout the project
-const byte ledRingCount = 12;
-// Define the pin numbers used for each component connected to the Arduino
-const byte ledRingPin = 3;
-const byte ledBrightPin = 5;
-const byte displayDataPin = 13;
-const byte displayClockPin = 12;
-const byte lightSensorPin = A0;
-// Define the pin numbers used for each component connected to the IO Expander
-const byte radioToggle = 0;
-const byte radioVolumeUp = 1;
-const byte radioVolumeDown = 2;
-const byte radioChannelUp = 3;
-const byte radioChannelDown = 4;
-const byte lampToggle = 5;
-const byte lampBrightnessUp = 6;
-const byte lampBrightnessDown = 7;
-// Define addresses for different I2C modules
-byte ioExpanderAddress = 0x38;
-byte radioAddress = 0x10;  // Currently not used
-byte clockAddress = 0x00;  // TODO: Determine I2C Address
-byte eepromAddress = 0x50;
+#define ledRingCount 12
+// define the pin numbers used for each component connected to the Arduino
+#define ledRingPin 3
+#define ledBrightPin 5
+#define displayDataPin 3
+#define displayClockPin 2
+#define lightSensorPin A0
+// define the pin numbers used for each component connected to the IO Expander
+const uint8_t radioToggle = 0;
+const uint8_t radioVolumeUp = 1;
+const uint8_t radioVolumeDown = 2;
+const uint8_t radioChannelUp = 3;
+const uint8_t radioChannelDown = 4;
+const uint8_t lampToggle = 5;
+const uint8_t lampBrightnessUp = 6;
+const uint8_t lampBrightnessDown = 7;
+// define addresses for different I2C modules
+/* i2c_scanner found the addresses:
+ * 0x10 -> RDA5807M
+ * 0x11 -> RDA5807M
+ * 0x20
+ * 0x57
+ * 0x60 -> RDA5807M in TEA5767 radio module
+ * 0x68
+*/
+#define ioExpanderAddress 0x38
+#define radioAddress 0x10
+#define clockAddress 0x57
+#define eepromAddress 0x50
+
 
 // Objects to control the different I2C Modules
 RDA5807M radio;
 PCF8574 ioExpander(ioExpanderAddress);
-TM1637Display display(displayDataPin, displayClockPin);
 RTC_DS3231 clock;
 I2C_eeprom storage(eepromAddress, 0x8000);
 // Radio variables
-byte radioVolume = 4;
+uint8_t radioVolume = 4;
 bool radioMute = false;
 bool radioMono = false;
 // Lamp variables
-byte lampBrightness = 0;
+uint8_t lampBrightness = 0;
 bool lampEnabled = false;
-byte redBrightness = 0;
-byte greenBrightness = 0;
-byte blueBrightness = 0;
-byte lampBrightnessByte = 0;
-// EEPROM Data addresses
-// TODO Implement Wear levelling to improve EEPROM life expectancy
-const byte alarmOneMinuteAddress = 0x00;
-const byte alarmOneHourAddress = 0x01;
-const byte alarmTwoMinuteAddress = 0x02;
-const byte alarmTwoHourAddress = 0x03;
-const byte alarmOneRadioChannel = 0x04; // This takes up two bytes
-const byte alarmTwoRadioChannel = 0x06; // This takes up two bytes
-const byte alarmOneLampBrightness = 0x08;
-const byte alarmTwoLampBrightness = 0x09;
-const byte alarmOneRadioVolume = 0x10;
-const byte alarmTwoRadioVolume = 0x011;
+uint8_t redBrightness = 0;
+uint8_t greenBrightness = 0;
+uint8_t blueBrightness = 0;
 // Display variables
-byte displayBrightness = 7;
+uint8_t displayBrightness = 15;
 bool displayEnabled = true;
 bool showRadioVolume = false;
 bool showRadioChannel = false;
 bool showLampBrightness = false;
 bool flashColon = false;
 // Time handling variables
-byte alarmOneMinute;
-byte alarmOneHour;
-byte alarmTwoMinute;
-byte alarmTwoHour;
+uint8_t alarmOneMinute;
+uint8_t alarmOneHour;
+uint8_t alarmTwoMinute;
+uint8_t alarmTwoHour;
 DateTime currentTime;
 
 
@@ -101,7 +95,7 @@ void buttonRadioSeekDown(){
   // TODO: Show channel
 }
 
-byte buttonRadioVolumeUp(){
+uint8_t buttonRadioVolumeUp(){
   // Increases the radio volume
   radioVolume++;
   radio.setVolume(radioVolume);
@@ -109,7 +103,7 @@ byte buttonRadioVolumeUp(){
   return radioVolume;
 }
 
-byte buttonRadioVolumeDown(){
+uint8_t buttonRadioVolumeDown(){
   // Decreases the radio volume
   radioVolume--;
   radio.setVolume(radioVolume);
@@ -120,7 +114,7 @@ byte buttonRadioVolumeDown(){
 // Functions to be executed in the loop
 void setBrightness(){
   // Change the brightness of the display in accordance with the environment
-  byte value = analogRead(lightSensorPin);
+  uint8_t value = analogRead(lightSensorPin);
   // TODO: Convert the read value to an appropriate brightness level
 
 }
@@ -151,15 +145,10 @@ void lostPower(){
   // TODO: Function to run after the clock has lost power and needs to be reset
 }
 
-// Functions for the EEPROM chip
-void readEEPROMData(){
-
-}
-
 // Functions for the display
 void displayTime(){
-  int number = currentTime.hour() * 100 + currentTime.minute();
-  display.showNumberDecEx(number, 1, true);
+  Serial.println("displayTime called");
+  write_time(currentTime.hour(), currentTime.minute());
 }
 
 // Normal Arduino functions
@@ -174,11 +163,11 @@ void setup(){
   radio.setVolume(15);
   radio.setMono(radioMono);
   radio.setMute(radioMute);
-  display.setBrightness(displayBrightness, displayEnabled);
   if(clock.lostPower()){
     lostPower();
   }
-  display.showNumberDecEx(5000);
+  setup_display();
+
 }
 
 void loop(){
