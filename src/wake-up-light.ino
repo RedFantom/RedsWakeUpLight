@@ -32,7 +32,7 @@ const byte lampBrightnessUp = 6;
 const byte lampBrightnessDown = 7;
 // Define addresses for different I2C modules
 byte ioExpanderAddress = 0x38;
-byte radioAddress = 0x11;  // Currently not used
+byte radioAddress = 0x10;  // Currently not used
 byte clockAddress = 0x00;  // TODO: Determine I2C Address
 byte eepromAddress = 0x50;
 
@@ -164,16 +164,21 @@ void displayTime(){
 
 // Normal Arduino functions
 void setup(){
+  Serial.begin(9600);
+  while(!Serial);
+  Serial.println("Starting activities");
   radio.init();
-  radio.setBandFrequency(RADIO_BAND_FM, 8930);
-  radio.setVolume(radioVolume);
+  Serial.println("Radio initialized");
+  radio.setBandFrequency(RADIO_BAND_FM, 9180);
+  Serial.println("Frequency set");
+  radio.setVolume(15);
   radio.setMono(radioMono);
   radio.setMute(radioMute);
   display.setBrightness(displayBrightness, displayEnabled);
   if(clock.lostPower()){
     lostPower();
   }
-  readEEPROMData();
+  display.showNumberDecEx(5000);
 }
 
 void loop(){
