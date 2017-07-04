@@ -12,5 +12,6 @@ install:
    - platformio lib --storage-dir lib install PCF8574
    - platformio lib --storage-dir lib install I2C_EEPROM
    - platformio lib --storage-dir lib install Radio
+   - platformio platforms install atmelavr
 script:
-   - platformio ci --board=nanoatmega328
+   - platformio ci --board=nanoatmega328 --src=src
