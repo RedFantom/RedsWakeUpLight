@@ -16,6 +16,9 @@ const uint8_t alarmTwoLampBrightness = 0x09;
 const uint8_t alarmOneRadioVolume = 0x10;
 const uint8_t alarmTwoRadioVolume = 0x011;
 
+I2C_eeprom storage(eepromAddress, 0x8000);
+
+
 // Functions for the EEPROM chip
 void readEEPROMData(){
 

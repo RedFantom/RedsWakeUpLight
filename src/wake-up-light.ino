@@ -11,6 +11,7 @@
 #include <PCF8574.h>
 #include <RTClib.h>
 #include <I2C_eeprom.h>
+#include <TM1637Display.h>
 
 // Constant values for use throughout the project
 #define ledRingCount 12
@@ -77,12 +78,14 @@ DateTime currentTime;
 
 // Functions to execute when the buttons to control the radio are pressed
 void buttonRadioToggle(){
+  Serial.println("buttonRadioToggle called");
   // Toggles the radio mute, turning it on when it's off and off when it's on
   radioMute != radioMute;
   radio.setMute(radioMute);
 }
 
 void buttonRadioSeekUp(){
+  Serial.println("buttonRadioSeekUp called");
   // Makes the radio module look for a new channel upwards from the current
   // channel
   radio.seekUp();
@@ -90,6 +93,7 @@ void buttonRadioSeekUp(){
 }
 
 void buttonRadioSeekDown(){
+  Serial.println("buttonRadioSeekDown called");
   // Makes the radio module look for a new channel downwards from the current
   // channel
   radio.seekDown();
@@ -97,6 +101,7 @@ void buttonRadioSeekDown(){
 }
 
 uint8_t buttonRadioVolumeUp(){
+  Serial.println("buttonRadioVolumeUp called");
   // Increases the radio volume
   radioVolume++;
   radio.setVolume(radioVolume);
@@ -105,6 +110,7 @@ uint8_t buttonRadioVolumeUp(){
 }
 
 uint8_t buttonRadioVolumeDown(){
+  Serial.println("buttonRadioVolumeDown called");
   // Decreases the radio volume
   radioVolume--;
   radio.setVolume(radioVolume);
@@ -114,6 +120,7 @@ uint8_t buttonRadioVolumeDown(){
 
 // Functions to be executed in the loop
 void setBrightness(){
+  Serial.println("setBrightness called");
   // Change the brightness of the display in accordance with the environment
   uint8_t value = analogRead(lightSensorPin);
   // TODO: Convert the read value to an appropriate brightness level
@@ -122,28 +129,36 @@ void setBrightness(){
 
 // Functions for the buttons for the lamp
 void buttonLampToggle(){
+  Serial.println("buttonLampToggle called");
   lampEnabled != lampEnabled;
   updateLampBrightness();
 }
 
 void buttonLampBrightnessUp(){
+  Serial.println("buttonLampBrightnessUp called");
   lampBrightness++;
   updateLampBrightness();
 }
 
 void buttonLampBrightnessDown(){
+  Serial.println("buttonLampBrightnessDown called");
   lampBrightness--;
   updateLampBrightness();
 }
 
+/** Function to update the brightness of the lamp
+  * Updates the brightness based upon the lampEnabled (only if true)
+*/
 void updateLampBrightness(){
+  Serial.println("updateLampBrightness called");
   if(lampEnabled){
+    Serial.println("lampEnabled is true, so setting the brightness");
     analogWrite(ledBrightPin, lampBrightness * 12);
   }
 }
 
 void lostPower(){
-  // TODO: Function to run after the clock has lost power and needs to be reset
+  Serial.println("lostPower called");
 }
 
 // Functions for the display
@@ -164,10 +179,12 @@ void setup(){
   radio.setVolume(15);
   radio.setMono(radioMono);
   radio.setMute(radioMute);
+  Serial.println("Radio setup");
   if(clock.lostPower()){
     lostPower();
   }
-  setup_display();
+  Serial.println("Setting up display");
+  // setup_display();
 
 }
 
