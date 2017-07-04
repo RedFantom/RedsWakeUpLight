@@ -3,3 +3,4 @@
 .clang_complete
 .gcc-flags.json
 src/wake-up-light.ino___jb_old___
+lib/*ID*
