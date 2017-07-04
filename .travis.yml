@@ -14,4 +14,4 @@ install:
    - platformio lib --storage-dir lib install Radio
    - platformio platforms install atmelavr
 script:
-   - platformio ci --project-conf=platformio.ini
+   - platformio ci --project-conf=platformio.ini src/wake-up-light.ino
