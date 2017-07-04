@@ -33,16 +33,17 @@ const uint8_t lampBrightnessDown = 7;
 /* i2c_scanner found the addresses:
  * 0x10 -> RDA5807M
  * 0x11 -> RDA5807M
- * 0x20
- * 0x57
+ * 0x21 -> PCF8574 (A0 -> High, A1 -> Low, A2 -> Low)
+ * 0x52 -> EEPROM module (A0 -> Low, A1 -> High, A2 -> High)
+ * 0x57 -> Clock address
  * 0x60 -> RDA5807M in TEA5767 radio module
- * 0x68
+ * 0x68 -> EEPROM on clock module
 */
-#define ioExpanderAddress 0x38
+#define ioExpanderAddress 0x21
 #define radioAddress 0x10
 #define clockAddress 0x57
-#define eepromAddress 0x50
-
+#define eepromAddress 0x52
+#define clockEepromAddress 0x68
 
 // Objects to control the different I2C Modules
 RDA5807M radio;
